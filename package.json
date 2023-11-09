@@ -24,11 +24,26 @@
     "typescript": "5.2.2"
   },
   "manifest": {
+    "web_accessible_resources": [
+      {
+        "resources": [
+          "./src/contents/utility.js"
+        ],
+        "matches": [
+          "<all_urls>"
+        ]
+      }
+    ],
     "host_permissions": [
       "https://*/*"
     ],
     "permissions": [
-      "tabs"
+      "tabs",
+      "activeTab",
+      "declarativeContent",
+      "storage",
+      "notifications",
+      "scripting"
     ]
   }
 }

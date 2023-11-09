@@ -6,15 +6,16 @@ function IndexPopup() {
   return (
     <div
       style={{
+        width:357,
+        height:600,
         display: "flex",
         flexDirection: "column",
-        padding: 16
       }}>
       <h1>
-        Welcome to your <a href="https://www.plasmo.com">Plasmo</a> Extension!
+         <a href="https://www.plasmo.com">Plasmo</a> Extension!
       </h1>
       <input onChange={(e) => setData(e.target.value)} value={data} />
-      <footer>Crafted by @PlamoHQ</footer>
+      <footer>fdsfsdf</footer>
     </div>
   )
 }

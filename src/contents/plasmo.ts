@@ -1,11 +1,27 @@
 import type { PlasmoCSConfig } from "plasmo"
 
 export const config: PlasmoCSConfig = {
-  matches: ["https://www.plasmo.com/*"]
+  matches: ["<all_urls>"],
+  run_at: "document_end"
 }
+// 把脚本注入到页面中
+var s = document.createElement('script');
+s.src = chrome.runtime.getURL('./utility.js');
+(document.head || document.documentElement).appendChild(s);
 
-window.addEventListener("load", () => {
-  console.log("content script loaded")
+const WinUrl = window.location.href;
 
-  document.body.style.background = "pink"
-})
+window.addEventListener('message', (event) => {
+  if (event.source === window && event.data.type && event.data.type === 'GET_ACCOUNT') {
+    chrome.runtime.sendMessage({ type: 'GREETING', WinUrl: WinUrl });
+  }
+});
+
+// 将账户结果传回网页
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+  if (request.type === 'GET_ACCOUNT') {
+    window.postMessage({ type: 'ACCOUNT_RESULT', account: request.message }, '*');
+  }
+});
+
+
