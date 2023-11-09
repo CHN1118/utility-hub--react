@@ -22,21 +22,19 @@ let windowId = null; // 用来记录已打开窗口的ID
 chrome.runtime.onMessage.addListener(async function (request, sender, sendResponse) {
     if (request.type === 'GREETING') {
         getCWId(sender);
-        console.log('currentWindowID:', currentWindowID.id)
         // 如果已经有一个窗口打开，不再创建新窗口
         if (windowId !== null) {
             console.log('Window already opened.');
             return;
         }
         // 计算新窗口的位置
-        chrome.windows.getCurrent(function (currentWindow) {
+        chrome.windows.getCurrent(async function (currentWindow) {
             const width = 360; // 新窗口的宽度
             const height = 620; // 新窗口的高度
             const left = currentWindow.left + (currentWindow.width - width);
             const top = currentWindow.top;
-
             // 创建新窗口
-            chrome.windows.create({
+            await chrome.windows.create({
                 url: 'options.html',
                 type: 'popup',
                 width: width,
@@ -44,10 +42,16 @@ chrome.runtime.onMessage.addListener(async function (request, sender, sendRespon
                 left: left,
                 top: top,
                 focused: true
-            }, function (newWindow) {
-                console.log("新窗口创建了，窗口ID为：" + newWindow.id);
-                windowId = newWindow.id; // 记录新窗口的ID
+            }, function (nW) {
+                windowId = nW.id; // 记录新窗口的ID
+                //监听窗口的页面加载完成事件
+                chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
+                    if (changeInfo.status === 'complete' && tabId === nW.tabs[0].id) {
+                        chrome.tabs.sendMessage(nW.tabs[0].id, { type: 'GREETING', message: request.message })
+                    }
+                });
             });
+
         });
     }
 
@@ -59,6 +63,7 @@ chrome.runtime.onMessage.addListener(async function (request, sender, sendRespon
 
 // 监听窗口关闭事件
 chrome.windows.onRemoved.addListener(function (closedWindowId) {
+    console.log('windowId:', windowId)
     if (closedWindowId === windowId) {
         console.log('Window with ID ' + windowId + ' has been closed.');
         windowId = null; // 清除已关闭窗口的ID

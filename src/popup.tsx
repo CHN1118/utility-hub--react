@@ -1,5 +1,5 @@
 import { useState } from "react"
-
+import './style.css'
 function IndexPopup() {
   const [data, setData] = useState("")
 
@@ -11,11 +11,8 @@ function IndexPopup() {
         display: "flex",
         flexDirection: "column",
       }}>
-      <h1>
-         <a href="https://www.plasmo.com">Plasmo</a> Extension!
-      </h1>
-      <input onChange={(e) => setData(e.target.value)} value={data} />
-      <footer>fdsfsdf</footer>
+      {/* <input onChange={(e) => setData(e.target.value)} value={data} /> */}
+      {/* <footer>fdsfsdf</footer> */}
     </div>
   )
 }
