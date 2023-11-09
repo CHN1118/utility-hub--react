@@ -53,6 +53,7 @@ chrome.runtime.onMessage.addListener(async function (request, sender, sendRespon
 
     if (request.type === 'GET_ACCOUNT') {
         chrome.tabs.sendMessage(currentWindowID.id, { type: 'GET_ACCOUNT', message: request.message })
+        chrome.windows.remove(windowId);
     }
 });
 
