@@ -1,6 +1,6 @@
 {
-  "name": "utility",
-  "displayName": "Utility",
+  "name": "utility-hub",
+  "displayName": "UtilityHub",
   "version": "0.0.1",
   "description": "浏览器中的utility钱包",
   "author": "chn",
@@ -27,7 +27,7 @@
     "web_accessible_resources": [
       {
         "resources": [
-          "./src/contents/utility.js"
+          "./src/utility.js"
         ],
         "matches": [
           "<all_urls>"

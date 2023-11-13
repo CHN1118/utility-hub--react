@@ -43,11 +43,14 @@ chrome.runtime.onMessage.addListener(async function (request, sender, sendRespon
                 top: top,
                 focused: true
             }, function (nW) {
-                windowId = nW.id; // 记录新窗口的ID
+                windowId = {
+                    id: nW.id,
+                    messageId: request.messageId
+                }; // 记录新窗口的ID
                 //监听窗口的页面加载完成事件
                 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
                     if (changeInfo.status === 'complete' && tabId === nW.tabs[0].id) {
-                        chrome.tabs.sendMessage(nW.tabs[0].id, { type: 'GREETING', message: request.message })
+                        chrome.tabs.sendMessage(nW.tabs[0].id, { type: 'GREETING', message: request.message, messageId: request.messageId })
                     }
                 });
             });
@@ -56,16 +59,15 @@ chrome.runtime.onMessage.addListener(async function (request, sender, sendRespon
     }
 
     if (request.type === 'GET_ACCOUNT') {
-        chrome.tabs.sendMessage(currentWindowID.id, { type: 'GET_ACCOUNT', message: request.message })
-        chrome.windows.remove(windowId);
+        chrome.tabs.sendMessage(currentWindowID.id, { type: 'GET_ACCOUNT', message: request.message, messageId: request.messageId })
+        closeWindow()
     }
 });
 
 // 监听窗口关闭事件
 chrome.windows.onRemoved.addListener(function (closedWindowId) {
-    console.log('windowId:', windowId)
-    if (closedWindowId === windowId) {
-        console.log('Window with ID ' + windowId + ' has been closed.');
+    if (closedWindowId === windowId?.id) {
+        chrome.tabs.sendMessage(currentWindowID.id, { type: 'CLOSE_WINDOW', messageId: windowId?.messageId })
         windowId = null; // 清除已关闭窗口的ID
     }
 });
@@ -81,4 +83,10 @@ function getCWId(sender) {
             }
         });
     })
+}
+
+// 关闭窗口
+function closeWindow() {
+    chrome.windows.remove(windowId.id);
+    windowId = null;
 }

@@ -13,14 +13,17 @@ const WinUrl = window.location.href;
 
 window.addEventListener('message', (event) => {
   if (event.source === window && event.data.type && event.data.type === 'GET_ACCOUNT') {
-    chrome.runtime.sendMessage({ type: 'GREETING', WinUrl: WinUrl });
+    chrome.runtime.sendMessage({ type: 'GREETING', WinUrl: WinUrl, messageId: event.data.messageId });
   }
 });
 
 // 将账户结果传回网页
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   if (request.type === 'GET_ACCOUNT') {
-    window.postMessage({ type: 'ACCOUNT_RESULT', account: request.message }, '*');
+    window.postMessage({ type: 'ACCOUNT_RESULT', messageId: request.messageId, account: request.message, }, '*');
+  }
+  if (request.type === 'CLOSE_WINDOW') {
+    window.postMessage({ type: 'CLOSE_WINDOW', messageId: request.messageId }, '*');
   }
 });
 
